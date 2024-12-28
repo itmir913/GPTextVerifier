@@ -2,7 +2,7 @@ from tkinter import filedialog
 
 import pandas as pd
 
-from .config import COLUMN_NAME, COLUMN_BEFORE, COLUMN_AFTER, COLUMN_CLASS, COLUMN_NUMBER  # 변수 가져오기
+from configs.config import COLUMN_NAME, COLUMN_BEFORE, COLUMN_AFTER, COLUMN_CLASS, COLUMN_NUMBER  # 변수 가져오기
 
 
 def load_excel_file(listbox, file_path):

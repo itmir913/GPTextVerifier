@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 
+from configs.config import *
 from .comparator import highlight_diff
-from .config import *
 from .excel_handler import load_excel_file
 
 # 기본 폰트 설정
