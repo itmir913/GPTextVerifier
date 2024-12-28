@@ -6,10 +6,10 @@ from tkinter import Toplevel, Label, Button, StringVar, Frame, messagebox
 from tkinter.ttk import Progressbar
 
 import aiohttp
-import pandas as pd
 
 from configs.api_url import API_URL
 from configs.config import *
+from configs.excel_handler import load_excel_file
 from configs.hash import sha_256_hash
 
 # 기본 폰트 설정
@@ -22,7 +22,7 @@ class TextVerifier:
         self.file_path = file_path
         self.stop_event = Event()
         self.update_queue = Queue()
-        self.df = None  # 엑셀 데이터를 저장할 변수
+        self.df = load_excel_file(file_path)
         self.create_window()
 
     def create_window(self):
@@ -42,6 +42,7 @@ class TextVerifier:
         window = Toplevel(self.parent)
         window.title("텍스트 검증 with GPT")
         window.geometry("800x600")
+        window.protocol("WM_DELETE_WINDOW", self.close_window)
         return window
 
     def _setup_gui_elements(self):
@@ -80,7 +81,6 @@ class TextVerifier:
     def load_excel_data(self):
         """엑셀 파일을 읽어 COLUMN_BEFORE 확인 및 총 데이터 표시."""
         try:
-            self.df = pd.read_excel(self.file_path)
             self._verify_excel_columns()
             total_rows = len(self.df)
             self.status_var.set(f"총 데이터 개수: {total_rows}")
@@ -117,17 +117,21 @@ class TextVerifier:
 
     async def _process_rows(self, session, total_rows, file_path):
         """각 행을 처리합니다."""
-        for idx, row in self.df.iterrows():
-            if self.stop_event.is_set():
-                self.update_queue.put(("작업이 중단되었습니다.", 0))
-                return
+        try:
+            for idx, row in self.df.iterrows():
+                if self.stop_event.is_set():  # TODO
+                    self.update_queue.put(("작업이 중단되었습니다.", 0))
+                    return
 
-            sha_256 = sha_256_hash()
-            data = {"hash": sha_256, "content": row[COLUMN_BEFORE]}
-            self.df.at[idx, COLUMN_AFTER] = await self._send_request_with_error_handling(session, data)
-            self.df.to_excel(file_path, index=False)  # 즉시 결과 저장
+                sha_256 = sha_256_hash()
+                data = {"hash": sha_256, "content": row[COLUMN_BEFORE]}
+                self.df.at[idx, COLUMN_AFTER] = await self._send_request_with_error_handling(session, data)
+                self.df.to_excel(file_path, index=False)  # 즉시 결과 저장
 
-            await self._update_progress(idx, total_rows)  # 비동기 호출
+                await self._update_progress(idx, total_rows)  # 비동기 호출
+        except PermissionError as e:
+            self.show_error("파일이 다른 프로그램에서 열려 있습니다.")
+            return
 
     async def _send_request_with_error_handling(self, session, data):
         """HTTP POST 요청을 전송하고 오류를 처리합니다."""
@@ -180,4 +184,3 @@ class TextVerifier:
     def show_error(self, message):
         """오류 메시지를 표시합니다."""
         messagebox.showerror("오류", message)
-        self.window_a.destroy()  # 오류 발생 시 창 닫기
