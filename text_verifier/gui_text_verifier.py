@@ -147,13 +147,15 @@ class TextVerifier:
                 return response["message"]
             else:
                 self.show_error(response["message"])
-                return "오류"
+                raise Exception(response["message"])
         except aiohttp.ClientError as e:
             return f"클라이언트 오류: {str(e)}"
         except asyncio.TimeoutError:
             return "요청 시간이 초과되었습니다."
         except Exception as e:
             return f"오류: {str(e)}"
+        finally:
+            self.stop_event.set()
 
     async def send_post_request(self, session, data):
         """HTTP POST 요청을 보내는 함수."""
