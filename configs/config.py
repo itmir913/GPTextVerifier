@@ -5,3 +5,6 @@ COLUMN_AFTER = "수정후"  # 수정된 값이 담긴 열 이름
 COLUMN_CLASS = "반"  # CLASS 값이 담긴 열 이름
 COLUMN_NUMBER = "번호"  # NUMBER 값이 담긴 열 이름
 
+COLUMN_STATUS = "상태"
+PLAG_STATUS_SUCCESS = "Success"
+PLAG_STATUS_FAIL = "Fail"

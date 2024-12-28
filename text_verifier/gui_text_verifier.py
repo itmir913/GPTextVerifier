@@ -116,6 +116,8 @@ class TextVerifier:
             return
 
         self.df[COLUMN_AFTER] = ""
+        if COLUMN_STATUS not in self.df.columns:
+            self.df[COLUMN_STATUS] = ""
         total_rows = len(self.df)
 
         async with aiohttp.ClientSession() as session:
@@ -129,9 +131,21 @@ class TextVerifier:
                     self.update_queue.put(("작업이 중단되었습니다.", 0))
                     return
 
+                if self.df.at[idx, COLUMN_STATUS] == PLAG_STATUS_SUCCESS:
+                    await self._update_progress(idx, total_rows)  # 비동기 호출
+                    continue
+
                 sha_256 = sha_256_hash()
                 data = {"hash": sha_256, "content": row[COLUMN_BEFORE]}
-                self.df.at[idx, COLUMN_AFTER] = await self._send_request_with_error_handling(session, data)
+                success, message = await self._send_request_with_error_handling(session, data)
+
+                self.df.at[idx, COLUMN_AFTER] = message
+
+                if success:
+                    self.df.at[idx, COLUMN_STATUS] = PLAG_STATUS_SUCCESS
+                else:
+                    self.df.at[idx, COLUMN_STATUS] = PLAG_STATUS_FAIL
+
                 self.df.to_excel(file_path, index=False)  # 즉시 결과 저장
 
                 await self._update_progress(idx, total_rows)  # 비동기 호출
@@ -143,17 +157,21 @@ class TextVerifier:
         """HTTP POST 요청을 전송하고 오류를 처리합니다."""
         try:
             response = await self.send_post_request(session, data)
-            if response["success"]:
-                return response["message"]
+            success = response["success"]
+            message = response["message"]
+
+            if success:
+                return success, message
             else:
-                self.show_error(response["message"])
-                raise Exception(response["message"])
+                self.show_error(message)
+                raise Exception(message)
+
         except aiohttp.ClientError as e:
-            return f"클라이언트 오류: {str(e)}"
+            return False, f"클라이언트 오류: {str(e)}"
         except asyncio.TimeoutError:
-            return "요청 시간이 초과되었습니다."
+            return False, "요청 시간이 초과되었습니다."
         except Exception as e:
-            return f"오류: {str(e)}"
+            return False, f"오류: {str(e)}"
         finally:
             self.stop_event.set()
 
@@ -174,7 +192,6 @@ class TextVerifier:
         if idx + 1 == total_rows:
             self.stop_event.set()
             self.update_queue.put("작업이 완료되었습니다.")
-
 
     def update_status(self):
         """큐에서 메시지를 꺼내 상태 업데이트."""
