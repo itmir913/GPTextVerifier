@@ -10,12 +10,8 @@ def load_excel_file(file_path):
 
     try:
         # 파일이 다른 프로그램에서 열려 있는지 확인
-        with open(file_path, "w") as file:
-
-            # 파일을 Pandas로 읽기
-            df = pd.read_excel(file)
-            return df
-
+        with open(file_path, "a") as file:
+            pass
     except FileNotFoundError:
         print("파일이 존재하지 않습니다.")
     except PermissionError:
@@ -23,4 +19,4 @@ def load_excel_file(file_path):
     except Exception as e:
         print(f"오류 발생: {e}")
 
-    return None
+    return pd.read_excel(file_path)
