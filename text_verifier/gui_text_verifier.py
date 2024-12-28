@@ -22,7 +22,13 @@ class TextVerifier:
         self.file_path = file_path
         self.stop_event = Event()
         self.update_queue = Queue()
-        self.df = load_excel_file(file_path)
+
+        try:
+            self.df = load_excel_file(file_path)
+        except Exception as e:
+            self.show_error(str(e))
+            return
+
         self.create_window()
 
     def create_window(self):

@@ -76,6 +76,8 @@ def open_file(parent, listbox, file_path):
 
     except ValueError as e:
         messagebox.showerror("오류", str(e))
+    except Exception as e:
+        messagebox.showerror("오류", str(e))
     finally:
         parent.focus_force()
 

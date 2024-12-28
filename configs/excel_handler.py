@@ -13,10 +13,10 @@ def load_excel_file(file_path):
         with open(file_path, "a") as file:
             pass
     except FileNotFoundError:
-        print("파일이 존재하지 않습니다.")
+        raise FileNotFoundError("파일이 존재하지 않습니다.")
     except PermissionError:
-        print("파일이 다른 프로그램에서 사용 중입니다.")
+        raise FileNotFoundError("파일이 다른 프로그램에서 사용 중입니다.")
     except Exception as e:
-        print(f"오류 발생: {e}")
+        raise FileNotFoundError(f"오류 발생: {e}")
 
     return pd.read_excel(file_path)
