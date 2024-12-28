@@ -90,7 +90,6 @@ def copy_to_clipboard(text_widget):
     content = text_widget.get("1.0", "end-1c")  # 텍스트 내용 가져오기 (마지막 개행 제외)
     text_widget.clipboard_clear()  # 클립보드 초기화
     text_widget.clipboard_append(content)  # 클립보드에 텍스트 추가
-    messagebox.showinfo("복사 완료", "클립보드에 복사되었습니다.")  # 알림 메시지
 
 
 def text_differ(parent):
