@@ -5,11 +5,12 @@ import pandas as pd
 from .config import COLUMN_NAME, COLUMN_BEFORE, COLUMN_AFTER, COLUMN_CLASS, COLUMN_NUMBER  # 변수 가져오기
 
 
-def load_excel_file(listbox):
+def load_excel_file(listbox, file_path):
     """
     Excel 파일을 열고 데이터를 읽어 리스트박스에 추가합니다.
     """
-    file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx *.xls")])
+    if not file_path:
+        file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx *.xls")])
     if not file_path:
         return None
 

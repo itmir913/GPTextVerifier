@@ -45,11 +45,11 @@ def update_edittext_logic(text_box1, text_box2, label1, label2):
     update_label_count(text_box2, label2)
 
 
-def open_file(parent, listbox):
+def open_file(parent, listbox, file_path):
     """엑셀 파일을 열고 리스트박스 갱신."""
     global df
     try:
-        df = load_excel_file(listbox)
+        df = load_excel_file(listbox, file_path)
     except ValueError as e:
         messagebox.showerror("오류", str(e))
     finally:
@@ -110,7 +110,7 @@ def create_text_frame(parent, label_text, copy_command):
     return frame, text_box, label
 
 
-def text_differ(parent):
+def text_differ(parent, file_path):
     """텍스트 비교 도구 창 생성."""
     global df
 
@@ -151,7 +151,7 @@ def text_differ(parent):
 
     menu_bar = tk.Menu(diff_window)
     file_menu = tk.Menu(menu_bar, tearoff=0)
-    file_menu.add_command(label="파일 열기", command=lambda: open_file(diff_window, listbox))
+    file_menu.add_command(label="파일 열기", command=lambda: open_file(diff_window, listbox, None))
     menu_bar.add_cascade(label="파일", menu=file_menu)
     diff_window.config(menu=menu_bar)
 
@@ -165,3 +165,6 @@ def text_differ(parent):
     diff_window.grid_rowconfigure(0, weight=1)
     diff_window.grid_columnconfigure(0, weight=1)
     diff_window.grid_columnconfigure(1, weight=3)
+
+    if file_path:
+        open_file(diff_window, listbox, file_path)
