@@ -81,6 +81,16 @@ def update_edittext_logic():
     update_label_count(text_box2, label_count_2)
 
 
+def copy_to_clipboard(text_widget):
+    """
+    주어진 텍스트 위젯의 내용을 클립보드에 복사하는 함수.
+    """
+    content = text_widget.get("1.0", "end-1c")  # 텍스트 내용 가져오기 (마지막 개행 제외)
+    text_widget.clipboard_clear()  # 클립보드 초기화
+    text_widget.clipboard_append(content)  # 클립보드에 텍스트 추가
+    messagebox.showinfo("복사 완료", "클립보드에 복사되었습니다.")  # 알림 메시지
+
+
 def text_differ(parent):
     global listbox, text_box1, text_box2, label_count_1, label_count_2, df  # 전역 변수 선언
 
@@ -113,17 +123,32 @@ def text_differ(parent):
 
     # 첫 번째 텍스트 박스 위에 글자 수 표시
     label_count_1 = tk.Label(frame_text_1, text="글자 바이트 수: 0", font=default_font)
-    label_count_1.pack(fill="x")
+    label_count_1.grid(row=0, column=0, sticky="nsew", pady=(5, 0))
 
     text_box1 = tk.Text(frame_text_1, height=20, width=50, font=default_font, state="disabled")
-    text_box1.pack(fill="both", expand=True)
+    text_box1.grid(row=1, column=0, sticky="nsew")
+
+    button_1 = tk.Button(frame_text_1, text="왼쪽 복사", font=default_font,
+                         command=lambda: copy_to_clipboard(text_box1))  # 왼쪽 버튼 추가
+    button_1.grid(row=2, column=0, sticky="nsew", pady=(5, 10))
 
     # 두 번째 텍스트 박스 위에 글자 수 표시
     label_count_2 = tk.Label(frame_text_2, text="글자 바이트 수: 0", font=default_font)
-    label_count_2.pack(fill="x")
+    label_count_2.grid(row=0, column=0, sticky="nsew", pady=(5, 0))
 
     text_box2 = tk.Text(frame_text_2, height=20, width=50, font=default_font)
-    text_box2.pack(fill="both", expand=True)
+    text_box2.grid(row=1, column=0, sticky="nsew")
+
+    button_2 = tk.Button(frame_text_2, text="오른쪽 복사", font=default_font,
+                         command=lambda: copy_to_clipboard(text_box2))  # 오른쪽 버튼 추가
+    button_2.grid(row=2, column=0, sticky="nsew", pady=(5, 10))
+
+    # 오른쪽 영역의 비율 설정 (글자 바이트 수:텍스트 박스:버튼 = 1:8:1)
+    for frame in [frame_text_1, frame_text_2]:
+        frame.rowconfigure(0, weight=1)  # 글자 바이트 수 라벨
+        frame.rowconfigure(1, weight=8)  # 텍스트 박스
+        frame.rowconfigure(2, weight=1)  # 버튼
+        frame.columnconfigure(0, weight=1)
 
     # 이벤트 바인딩 (래퍼 함수를 사용하여 매개변수 전달)
     text_box1.bind("<KeyRelease>", on_text_change)
