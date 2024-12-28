@@ -133,7 +133,11 @@ class TextVerifier:
         """HTTP POST 요청을 전송하고 오류를 처리합니다."""
         try:
             response = await self.send_post_request(session, data)
-            return response.get("message", "실패") if response.get("success") else "실패"
+            if response["success"]:
+                return response["message"]
+            else:
+                self.show_error(response["message"])
+                return "오류"
         except aiohttp.ClientError as e:
             return f"클라이언트 오류: {str(e)}"
         except asyncio.TimeoutError:
