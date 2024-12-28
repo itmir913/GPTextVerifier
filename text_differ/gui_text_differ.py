@@ -32,13 +32,15 @@ def update_label_count(text_widget, label_count):
     label_count.config(text=f"글자 바이트 수: {length}")  # 라벨 업데이트
 
 
-def open_file():
+def open_file(parent):
     global df
 
     try:
         df = load_excel_file(listbox)  # 엑셀 파일 로드 및 리스트박스 업데이트
     except ValueError as e:
         messagebox.showerror("오류", str(e))
+    finally:
+        parent.focus_force()  # 파일 열기 후 팝업 창에 포커
 
 
 # 리스트뷰에서 선택한 항목 처리 함수
@@ -143,13 +145,6 @@ def text_differ(parent):
                          command=lambda: copy_to_clipboard(text_box2))  # 오른쪽 버튼 추가
     button_2.grid(row=2, column=0, sticky="nsew", pady=(5, 10))
 
-    # 오른쪽 영역의 비율 설정 (글자 바이트 수:텍스트 박스:버튼 = 1:8:1)
-    for frame in [frame_text_1, frame_text_2]:
-        frame.rowconfigure(0, weight=1)  # 글자 바이트 수 라벨
-        frame.rowconfigure(1, weight=8)  # 텍스트 박스
-        frame.rowconfigure(2, weight=1)  # 버튼
-        frame.columnconfigure(0, weight=1)
-
     # 이벤트 바인딩 (래퍼 함수를 사용하여 매개변수 전달)
     text_box1.bind("<KeyRelease>", on_text_change)
     text_box2.bind("<KeyRelease>", on_text_change)
@@ -158,10 +153,17 @@ def text_differ(parent):
     menu_bar = tk.Menu(diff_window)  # 기본 Menu 위젯 생성
     file_menu = tk.Menu(menu_bar, tearoff=0)  # 서브 메뉴 생성
 
-    file_menu.add_command(label="파일 열기", command=open_file)
+    file_menu.add_command(label="파일 열기", command=lambda: open_file)
     menu_bar.add_cascade(label="파일", menu=file_menu)
 
     diff_window.config(menu=menu_bar)
+
+    # 오른쪽 영역의 비율 설정 (글자 바이트 수:텍스트 박스:버튼 = 1:8:1)
+    for frame in [frame_text_1, frame_text_2]:
+        frame.rowconfigure(0, weight=1)  # 글자 바이트 수 라벨
+        frame.rowconfigure(1, weight=8)  # 텍스트 박스
+        frame.rowconfigure(2, weight=1)  # 버튼
+        frame.columnconfigure(0, weight=1)
 
     # Grid 레이아웃의 행과 열에 weight 설정 (동적 크기 조정을 위해 필수)
     diff_window.grid_rowconfigure(0, weight=1)
