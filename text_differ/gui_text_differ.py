@@ -99,6 +99,10 @@ def text_differ(parent):
     diff_window = tk.Toplevel(parent)  # 부모 창을 기반으로 새로운 창 생성
     diff_window.title("텍스트 비교")
 
+    # 초기 크기 설정 (살짝 줄임)
+    diff_window.geometry("900x600")  # 초기 창 크기 (너비 x 높이)
+    diff_window.minsize(700, 500)    # 최소 크기 설정 (너비 x 높이)
+
     # 레이아웃 구성 (리스트뷰와 텍스트 박스)
     frame_left = tk.Frame(diff_window)
     frame_left.grid(row=0, column=0, sticky="nswe")
@@ -164,10 +168,14 @@ def text_differ(parent):
         frame.rowconfigure(2, weight=1)  # 버튼
         frame.columnconfigure(0, weight=1)
 
-    # Grid 레이아웃의 행과 열에 weight 설정 (동적 크기 조정을 위해 필수)
+    # frame_right 내부 열 비율 동일하게 설정
+    frame_right.grid_columnconfigure(0, weight=1)  # 첫 번째 텍스트 프레임
+    frame_right.grid_columnconfigure(1, weight=1)  # 두 번째 텍스트 프레임
+
+    # diff_window 전체 창 비율 확인 및 조정
     diff_window.grid_rowconfigure(0, weight=1)
-    diff_window.grid_columnconfigure(0, weight=1)  # 첫 번째 열 (frame_left)이 확장되도록 설정
-    diff_window.grid_columnconfigure(1, weight=3)  # 두 번째 열 (frame_right)이 더 많이 확장되도록 설정
+    diff_window.grid_columnconfigure(0, weight=1)  # 리스트박스 영역 (frame_left)
+    diff_window.grid_columnconfigure(1, weight=3)  # 텍스트 비교 영역 (frame_right)
 
     frame_left.grid_rowconfigure(0, weight=1)  # 리스트박스가 동적으로 확장되도록 설정
     frame_left.grid_columnconfigure(0, weight=1)
