@@ -125,7 +125,7 @@ class TextVerifier:
         """각 행을 처리합니다."""
         try:
             for idx, row in self.df.iterrows():
-                if self.stop_event.is_set():  # TODO
+                if self.stop_event.is_set():
                     self.update_queue.put(("작업이 중단되었습니다.", 0))
                     return
 
@@ -170,6 +170,11 @@ class TextVerifier:
         progress_value = (idx + 1) / total_rows * 100
         self.update_queue.put((f"진행 중: {idx + 1}/{total_rows} 처리 완료", progress_value))
         await asyncio.sleep(0.1)  # 비동기 대기 추가
+
+        if idx + 1 == total_rows:
+            self.stop_event.set()
+            self.update_queue.put("작업이 완료되었습니다.")
+
 
     def update_status(self):
         """큐에서 메시지를 꺼내 상태 업데이트."""
