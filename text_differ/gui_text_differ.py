@@ -152,7 +152,7 @@ def text_differ(parent):
     menu_bar = tk.Menu(diff_window)  # 기본 Menu 위젯 생성
     file_menu = tk.Menu(menu_bar, tearoff=0)  # 서브 메뉴 생성
 
-    file_menu.add_command(label="파일 열기", command=lambda: open_file)
+    file_menu.add_command(label="파일 열기", command=lambda: open_file(diff_window))
     menu_bar.add_cascade(label="파일", menu=file_menu)
 
     diff_window.config(menu=menu_bar)
