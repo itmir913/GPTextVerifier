@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 
-from .comparator import *
+from .comparator import highlight_diff
 from .excel_handler import *
 
 # 기본 폰트 설정 (맑은 고딕)
@@ -9,6 +9,24 @@ default_font = ("맑은 고딕", 14)
 
 # Excel 데이터프레임 전역 변수
 df = None
+
+
+# 글자 수 계산 함수
+def calculate_text_length(content):
+    """
+    주어진 텍스트 내용의 글자 수를 계산하는 함수.
+    """
+    return len(content)
+
+
+# 텍스트 변경 시 글자 수 갱신 함수
+def update_label_count(text_widget, label_count):
+    """
+    텍스트 위젯의 내용을 기반으로 글자 수를 계산하고 라벨에 업데이트하는 함수.
+    """
+    content = text_widget.get("1.0", "end-1c")  # 텍스트 내용 가져오기 (마지막 개행 제외)
+    length = calculate_text_length(content)  # 글자 수 계산
+    label_count.config(text=f"글자 수: {length}")  # 라벨 업데이트
 
 
 def open_file():
@@ -40,18 +58,25 @@ def on_select(event):
         text_box1.insert(tk.END, text1)
         text_box2.insert(tk.END, text2)
 
-        highlight_diff(text_box1, text_box2)  # 직접 호출 시에는 두 텍스트 박스를 전달
+        update_edittext_logic()
     except Exception as e:
         messagebox.showerror("오류", str(e))
 
 
 # 래퍼 함수: 이벤트 핸들러에서 매개변수를 전달하기 위한 함수
 def on_text_change(event):
+    update_edittext_logic()
+
+
+def update_edittext_logic():
     highlight_diff(text_box1, text_box2)
+
+    update_label_count(text_box1, label_count_1)
+    update_label_count(text_box2, label_count_2)
 
 
 def text_differ(parent):
-    global listbox, text_box1, text_box2, df  # 전역 변수 선언
+    global listbox, text_box1, text_box2, label_count_1, label_count_2, df  # 전역 변수 선언
 
     # 새로운 창 생성
     diff_window = tk.Toplevel(parent)  # 부모 창을 기반으로 새로운 창 생성
@@ -73,14 +98,26 @@ def text_differ(parent):
     listbox.config(yscrollcommand=scrollbar.set)
     scrollbar.config(command=listbox.yview)
 
-    # 텍스트 박스 ("수정전"과 "수정후" 데이터 비교용)
-    text_box1 = tk.Text(frame_right, height=20, width=50, font=default_font)
-    text_box1.grid(row=0, column=0, sticky="nsew")
-    text_box1.tag_configure("highlight", background="lightcoral")
+    # 텍스트 박스와 글자 수 표시 영역 추가
+    frame_text_1 = tk.Frame(frame_right)  # 첫 번째 텍스트 박스와 글자 수 영역
+    frame_text_1.grid(row=0, column=0, sticky="nsew")
 
-    text_box2 = tk.Text(frame_right, height=20, width=50, font=default_font)
-    text_box2.grid(row=0, column=1, sticky="nsew")
-    text_box2.tag_configure("highlight", background="lightgreen")
+    frame_text_2 = tk.Frame(frame_right)  # 두 번째 텍스트 박스와 글자 수 영역
+    frame_text_2.grid(row=0, column=1, sticky="nsew")
+
+    # 첫 번째 텍스트 박스 위에 글자 수 표시
+    label_count_1 = tk.Label(frame_text_1, text="글자 수: 0", font=("맑은 고딕", 12))
+    label_count_1.pack(fill="x")
+
+    text_box1 = tk.Text(frame_text_1, height=20, width=50, font=default_font)
+    text_box1.pack(fill="both", expand=True)
+
+    # 두 번째 텍스트 박스 위에 글자 수 표시
+    label_count_2 = tk.Label(frame_text_2, text="글자 수: 0", font=("맑은 고딕", 12))
+    label_count_2.pack(fill="x")
+
+    text_box2 = tk.Text(frame_text_2, height=20, width=50, font=default_font)
+    text_box2.pack(fill="both", expand=True)
 
     # 이벤트 바인딩 (래퍼 함수를 사용하여 매개변수 전달)
     text_box1.bind("<KeyRelease>", on_text_change)
@@ -105,13 +142,3 @@ def text_differ(parent):
 
     frame_right.grid_rowconfigure(0, weight=1)  # 텍스트 박스가 동적으로 확장되도록 설정
     frame_right.grid_columnconfigure(0, weight=1)  # 왼쪽 텍스트 박스 확장
-    frame_right.grid_columnconfigure(1, weight=1)  # 오른쪽 텍스트 박스 확장
-
-
-def open_file():
-    global df
-
-    try:
-        df = load_excel_file(listbox)  # 엑셀 파일 로드 및 리스트박스 업데이트
-    except ValueError as e:
-        messagebox.showerror("오류", str(e))
