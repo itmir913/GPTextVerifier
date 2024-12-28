@@ -1,8 +1,5 @@
 from tkinter import *
 
-from text_differ import text_differ
-from text_verifier import text_verifier
-
 # 기본 폰트 설정
 defaultFont = ("맑은 고딕", 25)
 
