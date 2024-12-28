@@ -56,9 +56,12 @@ def on_select(event):
         text2 = str(df.iloc[index][COLUMN_AFTER])  # "수정후" 데이터 가져오기
 
         # 텍스트 박스 초기화 및 데이터 삽입
+        text_box1.config(state="normal")  # 읽기 전용 해제 (데이터 삽입을 위해)
         text_box1.delete("1.0", tk.END)
-        text_box2.delete("1.0", tk.END)
         text_box1.insert(tk.END, text1)
+        text_box1.config(state="disabled")  # 다시 읽기 전용으로 설정
+
+        text_box2.delete("1.0", tk.END)
         text_box2.insert(tk.END, text2)
 
         update_edittext_logic()
@@ -112,7 +115,7 @@ def text_differ(parent):
     label_count_1 = tk.Label(frame_text_1, text="글자 바이트 수: 0", font=default_font)
     label_count_1.pack(fill="x")
 
-    text_box1 = tk.Text(frame_text_1, height=20, width=50, font=default_font)
+    text_box1 = tk.Text(frame_text_1, height=20, width=50, font=default_font, state="disabled")
     text_box1.pack(fill="both", expand=True)
 
     # 두 번째 텍스트 박스 위에 글자 수 표시
