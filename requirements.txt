@@ -2,3 +2,4 @@ tk
 pandas
 openpyxl
 tkinterdnd2
+aiohttp

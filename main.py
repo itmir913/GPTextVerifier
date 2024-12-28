@@ -3,10 +3,11 @@ from tkinter import Frame, Label, Button, StringVar
 from tkinterdnd2 import TkinterDnD, DND_FILES
 
 from text_differ.gui_text_differ import text_differ
-from text_verifier.gui_text_verifier import text_verifier
+from text_verifier.gui_text_verifier import TextVerifier
 
 # 기본 폰트 설정
 default_font = ("맑은 고딕", 25)
+xlsx_file_path = ""
 
 
 def create_main_window():
@@ -62,6 +63,9 @@ def create_top_frame(root, file_path_var):
         # 파일 경로를 StringVar에 설정
         file_path_var.set(file_path)
 
+        global xlsx_file_path
+        xlsx_file_path = file_path
+
     root.drop_target_register(DND_FILES)  # 드래그 앤 드롭 활성화
     root.dnd_bind('<<Drop>>', on_file_drop)  # 드롭 이벤트 바인딩
 
@@ -80,14 +84,14 @@ def create_bottom_frame(root, file_path_var):
         "텍스트 검증 도구",
         0,
         "lightblue",
-        lambda: text_verifier(root, file_path_var.get())
+        lambda: TextVerifier(root, xlsx_file_path)
     )
     create_button(
         frame_bottom,
         "텍스트 비교 도구",
         1,
         "lightgreen",
-        lambda: text_differ(root, file_path_var.get())
+        lambda: text_differ(root, xlsx_file_path)
     )
 
 
