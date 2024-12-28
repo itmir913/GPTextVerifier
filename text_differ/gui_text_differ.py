@@ -11,6 +11,15 @@ default_font = ("맑은 고딕", 14)
 df = None
 
 
+def open_file():
+    global df
+
+    try:
+        df = load_excel_file(listbox)  # 엑셀 파일 로드 및 리스트박스 업데이트
+    except ValueError as e:
+        messagebox.showerror("오류", str(e))
+
+
 # 리스트뷰에서 선택한 항목 처리 함수
 def on_select(event):
     global df
@@ -41,7 +50,7 @@ def on_text_change(event):
     highlight_diff(text_box1, text_box2)
 
 
-def text_differ_gui(parent):
+def text_differ(parent):
     global listbox, text_box1, text_box2, df  # 전역 변수 선언
 
     # 새로운 창 생성

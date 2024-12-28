@@ -1,6 +1,6 @@
 from tkinter import Toplevel, Label
 
-def text_verifier_gui(parent):
+def text_verifier(parent):
     window_a = Toplevel(parent)
     window_a.title("A Window")
     window_a.geometry("200x150")

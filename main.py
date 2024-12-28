@@ -1,5 +1,8 @@
 from tkinter import *
 
+from text_differ.gui_text_differ import text_differ
+from text_verifier.gui_text_verifier import text_verifier
+
 # 기본 폰트 설정
 defaultFont = ("맑은 고딕", 25)
 
@@ -35,7 +38,7 @@ def main():
         frame_bottom,
         text="텍스트 검증 도구",
         font=defaultFont,
-        command=lambda: text_verifier.text_verifier_gui(root),
+        command=lambda: text_verifier(root),
         bg="lightblue",
         fg="black",
     )
@@ -46,7 +49,7 @@ def main():
         frame_bottom,
         text="텍스트 비교 도구",
         font=defaultFont,
-        command=lambda: text_differ.text_differ_gui(root),
+        command=lambda: text_differ(root),
         bg="lightgreen",
         fg="black",
     )
