@@ -8,10 +8,13 @@ from tkinter.ttk import Progressbar
 import aiohttp
 import pandas as pd
 
+from configs.api_url import API_URL
 from configs.config import *
+from configs.hash import sha_256_hash
 
 # 기본 폰트 설정
 default_font = ("맑은 고딕", 25)
+
 
 class TextVerifier:
     def __init__(self, parent, file_path):
@@ -119,7 +122,8 @@ class TextVerifier:
                 self.update_queue.put(("작업이 중단되었습니다.", 0))
                 return
 
-            data = {"hash": "123", "content": row[COLUMN_BEFORE]}
+            sha_256 = sha_256_hash()
+            data = {"hash": sha_256, "content": row[COLUMN_BEFORE]}
             self.df.at[idx, COLUMN_AFTER] = await self._send_request_with_error_handling(session, data)
             self.df.to_excel(file_path, index=False)  # 즉시 결과 저장
 
@@ -139,7 +143,7 @@ class TextVerifier:
 
     async def send_post_request(self, session, data):
         """HTTP POST 요청을 보내는 함수."""
-        url = "http://example.com/api"  # 실제 API URL로 변경
+        url = API_URL
         async with session.post(url, json=data) as response:
             if response.status != 200:
                 raise Exception(f"HTTP {response.status}")

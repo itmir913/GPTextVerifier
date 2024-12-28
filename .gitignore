@@ -362,3 +362,6 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,intellij,pycharm
+
+
+configs/api_url.py
