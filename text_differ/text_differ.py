@@ -1,9 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 
-from .config import *
+from .comparator import *
 from .excel_handler import *
-from .text_comparator import *
 
 # 기본 폰트 설정 (맑은 고딕)
 default_font = ("맑은 고딕", 14)
