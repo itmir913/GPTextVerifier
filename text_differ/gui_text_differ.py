@@ -109,14 +109,14 @@ def text_differ(parent):
     frame_text_2.grid(row=0, column=1, sticky="nsew")
 
     # 첫 번째 텍스트 박스 위에 글자 수 표시
-    label_count_1 = tk.Label(frame_text_1, text="글자 바이트 수: 0", font=("맑은 고딕", 12))
+    label_count_1 = tk.Label(frame_text_1, text="글자 바이트 수: 0", font=default_font)
     label_count_1.pack(fill="x")
 
     text_box1 = tk.Text(frame_text_1, height=20, width=50, font=default_font)
     text_box1.pack(fill="both", expand=True)
 
     # 두 번째 텍스트 박스 위에 글자 수 표시
-    label_count_2 = tk.Label(frame_text_2, text="글자 바이트 수: 0", font=("맑은 고딕", 12))
+    label_count_2 = tk.Label(frame_text_2, text="글자 바이트 수: 0", font=default_font)
     label_count_2.pack(fill="x")
 
     text_box2 = tk.Text(frame_text_2, height=20, width=50, font=default_font)
