@@ -8,28 +8,42 @@ from .excel_handler import load_excel_file
 # 기본 폰트 설정
 default_font = ("맑은 고딕", 14)
 
+
 def calculate_text_length(content):
     """텍스트 내용의 글자 수를 계산."""
     byte_length = len(content.encode('utf-8'))
     char_length = len(content)
     return (byte_length - char_length) * 2 + char_length
 
+
 def update_label_count(text_widget, label):
     """텍스트 위젯의 글자 수를 라벨에 갱신."""
     content = text_widget.get("1.0", "end-1c")
     label.config(text=f"글자 바이트 수: {calculate_text_length(content)}")
 
-def copy_to_clipboard(text_widget):
-    """텍스트 위젯 내용을 클립보드에 복사."""
-    content = text_widget.get("1.0", "end-1c")
-    text_widget.clipboard_clear()
-    text_widget.clipboard_append(content)
+
+def copy_to_clipboard_with_feedback(button, text_widget):
+    """
+    텍스트 위젯의 내용을 클립보드에 복사하고 버튼 텍스트를 일시적으로 변경.
+    """
+    content = text_widget.get("1.0", "end-1c")  # 텍스트 내용 가져오기
+    text_widget.clipboard_clear()  # 클립보드 초기화
+    text_widget.clipboard_append(content)  # 클립보드에 텍스트 추가
+
+    # 버튼 텍스트를 "복사됨"으로 변경
+    original_text = button.cget("text")
+    button.config(text="복사됨")
+
+    # 2초 후 버튼 텍스트를 원래 상태로 복원
+    button.after(2000, lambda: button.config(text=original_text))
+
 
 def update_edittext_logic(text_box1, text_box2, label1, label2):
     """텍스트 상자 내용 비교 및 업데이트."""
     highlight_diff(text_box1, text_box2)
     update_label_count(text_box1, label1)
     update_label_count(text_box2, label2)
+
 
 def open_file(parent, listbox):
     """엑셀 파일을 열고 리스트박스 갱신."""
@@ -40,6 +54,7 @@ def open_file(parent, listbox):
         messagebox.showerror("오류", str(e))
     finally:
         parent.focus_force()
+
 
 def on_select(event, listbox, text_box1, text_box2, label1, label2):
     """리스트박스 선택 항목 처리."""
@@ -66,8 +81,11 @@ def on_select(event, listbox, text_box1, text_box2, label1, label2):
     except Exception as e:
         messagebox.showerror("오류", str(e))
 
+
 def create_text_frame(parent, label_text, copy_command):
-    """텍스트 상자와 관련 요소 생성."""
+    """
+    텍스트 상자와 관련 요소 생성.
+    """
     frame = tk.Frame(parent)
 
     label = tk.Label(frame, text=label_text, font=default_font)
@@ -76,7 +94,12 @@ def create_text_frame(parent, label_text, copy_command):
     text_box = tk.Text(frame, height=20, width=50, font=default_font)
     text_box.grid(row=1, column=0, sticky="nsew")
 
-    button = tk.Button(frame, text="복사", font=default_font, command=lambda: copy_command(text_box))
+    button = tk.Button(
+        frame,
+        text="복사",
+        font=default_font,
+        command=lambda: copy_command(button, text_box)
+    )
     button.grid(row=2, column=0, sticky="nsew", pady=(5, 10))
 
     frame.rowconfigure(0, weight=1)
@@ -85,6 +108,7 @@ def create_text_frame(parent, label_text, copy_command):
     frame.columnconfigure(0, weight=1)
 
     return frame, text_box, label
+
 
 def text_differ(parent):
     """텍스트 비교 도구 창 생성."""
@@ -109,12 +133,12 @@ def text_differ(parent):
     listbox.config(yscrollcommand=scrollbar.set)
 
     frame_text1, text_box1, label_count1 = create_text_frame(
-        frame_right, "글자 바이트 수: 0", copy_to_clipboard
+        frame_right, "글자 바이트 수: 0", copy_to_clipboard_with_feedback
     )
     frame_text1.grid(row=0, column=0, sticky="nsew")
 
     frame_text2, text_box2, label_count2 = create_text_frame(
-        frame_right, "글자 바이트 수: 0", copy_to_clipboard
+        frame_right, "글자 바이트 수: 0", copy_to_clipboard_with_feedback
     )
     frame_text2.grid(row=0, column=1, sticky="nsew")
 
