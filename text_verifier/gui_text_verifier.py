@@ -117,9 +117,12 @@ class TextVerifier:
             self.show_error("데이터가 로드되지 않았습니다.")
             return
 
-        self.df[COLUMN_AFTER] = ""
+        if COLUMN_AFTER not in self.df.columns:
+            self.df[COLUMN_AFTER] = ""
+
         if COLUMN_STATUS not in self.df.columns:
             self.df[COLUMN_STATUS] = ""
+
         total_rows = len(self.df)
 
         async with aiohttp.ClientSession() as session:
