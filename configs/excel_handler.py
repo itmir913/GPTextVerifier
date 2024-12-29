@@ -19,4 +19,4 @@ def load_excel_file(file_path):
     except Exception as e:
         raise FileNotFoundError(f"오류 발생: {e}")
 
-    return pd.read_excel(file_path)
+    return pd.read_excel(file_path, dtype=str, keep_default_na=False)
