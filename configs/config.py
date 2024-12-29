@@ -11,15 +11,20 @@ COLUMN_STATUS = "상태"
 PLAG_STATUS_SUCCESS = "Success"
 PLAG_STATUS_FAIL = "Fail"
 
+import configparser
+import os
+
 
 class ConfigSingleton:
-    """싱글톤 패턴으로 ConfigParser 관리"""
     _instance = None
 
     def __new__(cls, file_path='configs.txt'):
         if cls._instance is None:
             cls._instance = super(ConfigSingleton, cls).__new__(cls)
             cls._instance._config = configparser.ConfigParser()
+            # 파일 존재 여부 확인 및 읽기
+            if not os.path.exists(file_path):
+                raise FileNotFoundError(f"{file_path} 파일이 존재하지 않습니다.")
             cls._instance._config.read(file_path)
         return cls._instance
 

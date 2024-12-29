@@ -29,7 +29,11 @@ class TextVerifier:
             self.show_error(str(e))
             return
 
-        self.API_URL = ConfigSingleton().config['DEFAULT']['API_URL']
+        try:
+            self.API_URL = ConfigSingleton().config['DEFAULT']['API_URL']
+        except FileNotFoundError as e:
+            self.show_error("configs.txt 파일을 찾을 수 없어 종료합니다.")
+            return
 
         self.create_window()
 
