@@ -14,7 +14,7 @@ xlsx_file_path = ""
 
 # 제작자 및 버전 정보
 AUTHOR = "운양고등학교 이종환T"
-VERSION = "2024.12.29"
+VERSION = "2024.12.29-v1.4"
 
 
 def create_main_window():

@@ -75,9 +75,7 @@ class TextDiffer:
         self.diff_window.grid_columnconfigure(1, weight=3)
 
     def calculate_text_length(self, content):
-        byte_length = len(content.encode('utf-8'))
-        char_length = len(content)
-        return (byte_length - char_length) * 2 + char_length
+        return len(content.encode('utf-8'))
 
     def update_label_count(self, text_widget, label):
         content = text_widget.get("1.0", "end-1c")
