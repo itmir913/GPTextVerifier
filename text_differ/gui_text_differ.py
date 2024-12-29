@@ -64,8 +64,12 @@ def open_file(parent, listbox, file_path):
         if COLUMN_CLASS in df.columns and COLUMN_NUMBER in df.columns:
             PLAG_CLASS_AND_NUMBER = True
 
+        PLAG_STATUS = False
+        if COLUMN_STATUS in df.columns:
+            PLAG_STATUS = True
+
         # 리스트박스에 데이터 추가
-        for _, row in df.iterrows():
+        for index, row in df.iterrows():
             if PLAG_CLASS_AND_NUMBER:
                 # CLASS와 NUMBER 열이 존재하면 "{반}반 {번호}번 {이름}" 형식으로 추가
                 formatted_item = f"{row[COLUMN_CLASS]}반 {row[COLUMN_NUMBER]}번 {row[COLUMN_NAME]}"
@@ -73,6 +77,13 @@ def open_file(parent, listbox, file_path):
             else:
                 # 그렇지 않으면 이름만 추가
                 listbox.insert("end", row[COLUMN_NAME])
+
+            if PLAG_STATUS:
+                if row[COLUMN_STATUS] == PLAG_STATUS_SUCCESS:
+                    listbox.itemconfig(index, {'bg': 'green', 'fg': 'white'})
+                elif row[COLUMN_STATUS] == PLAG_STATUS_FAIL:
+                    listbox.itemconfig(index, {'bg': 'red', 'fg': 'white'})
+
 
     except ValueError as e:
         messagebox.showerror("오류", str(e))
