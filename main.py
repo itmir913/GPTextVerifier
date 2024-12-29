@@ -5,7 +5,7 @@ from tkinter import Frame, Label, Button, StringVar, messagebox
 from tkinterdnd2 import TkinterDnD, DND_FILES
 
 from configs.hash import sha_256_hash
-from text_differ.gui_text_differ import text_differ
+from text_differ.gui_text_differ import TextDiffer
 from text_verifier.gui_text_verifier import TextVerifier
 
 # 기본 폰트 설정
@@ -107,7 +107,7 @@ def create_bottom_frame(root, file_path_var):
         "텍스트 비교 도구",
         1,
         "lightgreen",
-        lambda: text_differ(root, xlsx_file_path)
+        lambda: TextDiffer(root, xlsx_file_path)
     )
 
 
