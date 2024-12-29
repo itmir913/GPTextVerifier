@@ -16,7 +16,7 @@ class ConfigSingleton:
     """싱글톤 패턴으로 ConfigParser 관리"""
     _instance = None
 
-    def __new__(cls, file_path='config.txt'):
+    def __new__(cls, file_path='configs.txt'):
         if cls._instance is None:
             cls._instance = super(ConfigSingleton, cls).__new__(cls)
             cls._instance._config = configparser.ConfigParser()
