@@ -7,7 +7,7 @@ from tkinter.ttk import Progressbar
 
 import aiohttp
 
-from configs.api_url import API_URL
+import configs.config
 from configs.config import *
 from configs.excel_handler import load_excel_file
 from configs.hash import sha_256_hash
@@ -28,6 +28,8 @@ class TextVerifier:
         except Exception as e:
             self.show_error(str(e))
             return
+
+        self.API_URL = ConfigSingleton().config['DEFAULT']['API_URL']
 
         self.create_window()
 
@@ -178,11 +180,14 @@ class TextVerifier:
 
     async def send_post_request(self, session, data):
         """HTTP POST 요청을 보내는 함수."""
-        url = API_URL
-        async with session.post(url, json=data) as response:
-            if response.status != 200:
-                raise Exception(f"HTTP {response.status}")
-            return await response.json()
+        try:
+            url = self.API_URL
+            async with session.post(url, json=data) as response:
+                if response.status != 200:
+                    raise Exception(f"HTTP {response.status}")
+                return await response.json()
+        except Exception as e:
+            self.show_error(str(e))
 
     async def _update_progress(self, idx, total_rows):
         """진행률을 업데이트합니다."""
