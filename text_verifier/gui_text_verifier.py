@@ -167,13 +167,14 @@ class TextVerifier:
                 raise Exception(message)
 
         except aiohttp.ClientError as e:
+            self.stop_event.set()
             return False, f"클라이언트 오류: {str(e)}"
         except asyncio.TimeoutError:
+            self.stop_event.set()
             return False, "요청 시간이 초과되었습니다."
         except Exception as e:
-            return False, f"오류: {str(e)}"
-        finally:
             self.stop_event.set()
+            return False, f"오류: {str(e)}"
 
     async def send_post_request(self, session, data):
         """HTTP POST 요청을 보내는 함수."""
@@ -189,10 +190,6 @@ class TextVerifier:
         self.update_queue.put((f"진행 중: {idx + 1}/{total_rows} 처리 완료", progress_value))
         await asyncio.sleep(0.1)  # 비동기 대기 추가
 
-        if idx + 1 == total_rows:
-            self.stop_event.set()
-            self.update_queue.put("작업이 완료되었습니다.")
-
     def update_status(self):
         """큐에서 메시지를 꺼내 상태 업데이트."""
         try:
@@ -202,7 +199,8 @@ class TextVerifier:
                 self.progress["value"] = progress_value
 
                 if progress_value >= 100:
-                    self.start_button.config(state='normal')
+                    self.status_var.set("작업이 완료되었습니다.")
+                    break
         except Empty:
             self.window_a.after(100, self.update_status)
 
