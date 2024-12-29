@@ -7,9 +7,9 @@ hash_cache = {}
 
 
 def sha_256_hash():
-    # PyInstaller로 패키징한 후 실행되는 경우 sys._MEIPASS가 설정됨
+    # PyInstaller로 패키징된 경우 실행 파일 경로를 가져옴
     if getattr(sys, 'frozen', False):
-        script_path = os.path.join(sys._MEIPASS, 'main.py')  # 실제 스크립트 이름
+        script_path = sys.executable  # 현재 실행 중인 바이너리 파일 경로
     else:
         script_path = __file__
 
@@ -17,7 +17,7 @@ def sha_256_hash():
     if script_path in hash_cache:
         return hash_cache[script_path]
 
-    # 파일을 열어서 내용을 읽어들임
+    # 바이너리 파일을 열어서 내용을 읽어들임
     with open(script_path, 'rb') as file:
         file_content = file.read()
 
@@ -28,3 +28,7 @@ def sha_256_hash():
     hash_cache[script_path] = sha256_hash
 
     return sha256_hash
+
+
+if __name__ == "__main__":
+    print("Program SHA-256 Hash:", sha_256_hash())
